@@ -1,4 +1,4 @@
-$dialog-padding: 0 ($baseline-grid * 3);
+$dialog-padding: 0 ($baseline-grid * 3) ($baseline-grid * 3);
 
 .md-dialog-is-showing {
   max-height: 100%;
@@ -51,8 +51,8 @@ md-dialog {
   .md-dialog-content {
     padding: $dialog-padding;
 
-    &.md-last {
-      padding-bottom: $baseline-grid * 3;
+    &.md-not-last {
+      padding-bottom: 0;
     }
   }
 
