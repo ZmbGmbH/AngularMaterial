@@ -228,7 +228,7 @@ function mdListDirective($mdTheming) {
  *
  */
 function mdListItemDirective($mdAria, $mdConstant, $mdUtil, $timeout) {
-  var proxiedTypes = ['md-checkbox', 'md-switch', 'md-menu'];
+  var proxiedTypes = ['md-checkbox', ':scope > md-switch', 'md-menu'];
   return {
     restrict: 'E',
     controller: 'MdListController',
