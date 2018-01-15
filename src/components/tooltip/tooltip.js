@@ -159,17 +159,26 @@ function MdTooltipDirective($timeout, $window, $$rAF, $document, $interpolate,
       // for it in the form of viable host(parent[0]).
       if (parent[0] && 'MutationObserver' in $window) {
         // Use a mutationObserver to tackle #2602.
-        var attributeObserver = new MutationObserver(function(mutations) {
-          if (isDisabledMutation(mutations)) {
-            $mdUtil.nextTick(function() {
-              setVisible(false);
-            });
-          }
-        });
+        var attributeObserver = null;
+        var observe = function() {
+          attributeObserver = new MutationObserver(function(mutations) {
+            if (isDisabledMutation(mutations)) {
+              $mdUtil.nextTick(function() {
+                setVisible(false);
+              });
+            }
+          });
 
-        attributeObserver.observe(parent[0], {
-          attributes: true
-        });
+          attributeObserver.observe(parent[0], {
+            attributes: true
+          });
+        };
+
+        if ('Zone' in $window) {
+          $window.Zone.root.runGuarded(observe);
+        } else {
+          observe();
+        }
       }
 
       elementFocusedOnWindowBlur = false;
@@ -268,19 +277,28 @@ function MdTooltipDirective($timeout, $window, $$rAF, $document, $interpolate,
 
     function configureWatchers() {
       if (element[0] && 'MutationObserver' in $window) {
-        var attributeObserver = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            if (mutation.attributeName === 'md-visible' &&
-                !scope.visibleWatcher ) {
-              scope.visibleWatcher = scope.$watch('mdVisible',
-                  onVisibleChanged);
-            }
+        var attributeObserver = null;
+        var observe = function() {
+          attributeObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+              if (mutation.attributeName === 'md-visible' &&
+                  !scope.visibleWatcher ) {
+                scope.visibleWatcher = scope.$watch('mdVisible',
+                    onVisibleChanged);
+              }
+            });
           });
-        });
 
-        attributeObserver.observe(element[0], {
-          attributes: true
-        });
+          attributeObserver.observe(element[0], {
+            attributes: true
+          });
+        };
+
+        if ('Zone' in $window) {
+          $window.Zone.root.runGuarded(observe);
+        } else {
+          observe();
+        }
 
         // Build watcher only if mdVisible is being used.
         if (attr.hasOwnProperty('mdVisible')) {

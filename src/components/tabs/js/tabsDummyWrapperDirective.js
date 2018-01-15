@@ -36,12 +36,19 @@ function MdTabsDummyWrapper ($mdUtil, $window) {
           characterData: true
         };
 
-        observer = new MutationObserver(mutationCallback);
+        if ('Zone' in $window) {
+            $window.Zone.root.runGuarded(function() {
+                observer = new MutationObserver(mutationCallback);
+            });
+        } else {
+            observer = new MutationObserver(mutationCallback);
+        }
+
         observer.observe(element[0], config);
         disconnect = observer.disconnect.bind(observer);
       } else {
         var debounced = $mdUtil.debounce(mutationCallback, 15, null, false);
-        
+
         element.on('DOMSubtreeModified', debounced);
         disconnect = element.off.bind(element, 'DOMSubtreeModified', debounced);
       }
